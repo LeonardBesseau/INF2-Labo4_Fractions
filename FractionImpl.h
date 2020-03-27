@@ -41,7 +41,7 @@ Fraction<T>::operator double() const {
 }
 
 template<typename T>
-Fraction<T> Fraction<T>::simplify() {
+Fraction<T> Fraction<T>::simplify() const{
     T divisor = gcd(abs(numerator), abs(denominator));
     if (divisor == 1) {
         return *this;
@@ -52,31 +52,36 @@ Fraction<T> Fraction<T>::simplify() {
 
 template<typename T>
 bool Fraction<T>::operator==(const Fraction &rhs) const {
-    return simplify(*this, rhs);
+    Fraction<T> left = this->simplify();
+    Fraction<T> right = rhs.simplify();
+    return left.identite(right);
 }
 
 template<typename T>
 Fraction<T> &Fraction<T>::operator+=(const Fraction<T> &rhs) {
-    Fraction temp = this->simplify();
-    if (denominator != rhs.denominator) {
-        temp.denominator = safeMultiply(temp.denominator, rhs.denominator);
-        temp.numerator = safeMultiply(temp.numerator, rhs.denominator);
-        temp.numerator = safeAddition(temp.numerator,safeMultiply(denominator, rhs.numerator));
-    } else {
-        temp.numerator = safeAddition(temp.numerator, rhs.numerator);
-    }
-    *this = temp;
     return *this;
 }
 
 
 template<typename T>
 Fraction<T> &Fraction<T>::operator*=(const Fraction<T> &rhs) {
-    Fraction left = *this->simplify();
-    Fraction right = rhs.simplify();
+    Fraction left = this;
+    Fraction right = rhs;
+    T simplify = gcd(abs(left.numerator), abs(right.denominator));
+    if(simplify == 1){
+        left.numerator/=simplify;
+        right.denominator/=simplify;
+    }
+
+    simplify = gcd(abs(right.numerator), abs(left.denominator));
+    if(simplify == 1){
+        right.numerator/=simplify;
+        left.denominator/=simplify;
+    }
     left.numerator = safeMultiply(left.numerator, right.numerator);
     left.denominator = safeMultiply(left.denominator, right.denominator);
-    *this = left.simplify();
+
+    *this = left;
     return *this;
 }
 

@@ -33,7 +33,7 @@ class Fraction {
 public:
     Fraction<T>(T numerator, T denominator);
 
-    Fraction<T> simplify();
+    Fraction<T> simplify() const;
 
     explicit operator float() const;
 
